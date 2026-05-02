@@ -1,0 +1,8 @@
+{
+  "name": "my-game-site",
+  "private": true,
+  "scripts": {
+    "env": "node scripts/generate-env.js",
+    "cards": "node scripts/generate-match-images.js"
+  }
+}

@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MATCH</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="game-ambient.css">
+<link rel="stylesheet" href="pro-theme.css">
+<style>
+:root {
+    --bg: #08090d;
+    --bg-soft: #10141b;
+    --panel: #161b23;
+    --panel-2: #1b212b;
+    --stroke: #2f3744;
+    --text: #eceff4;
+    --muted: #9ca7b8;
+    --accent: #ef4444;
+    --accent-dim: #7f1d1d;
+    --cyan: #f87171;
+    --green: #b91c1c;
+    --danger: #e45353;
+    --font: "Tajawal", sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: var(--font);
+    background:
+        radial-gradient(1200px 500px at 110% -20%, rgba(74, 199, 255, .09), transparent 60%),
+        radial-gradient(900px 420px at -20% 120%, rgba(240, 179, 56, .08), transparent 60%),
+        var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+}
+.wrap {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 10px;
+}
+.layout {
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr) 260px;
+    gap: 10px;
+}
+.side {
+    background: linear-gradient(180deg, #171c24, #11161e);
+    border: 1px solid var(--stroke);
+    border-radius: 14px;
+    padding: 14px 10px;
+    min-height: 80vh;
+    box-shadow: 0 14px 40px rgba(0, 0, 0, .35);
+}
+.main {
+    min-width: 0;
+}
+.top {
+    background: linear-gradient(180deg, #1b212b, #151a22);
+    border: 1px solid var(--stroke);
+    border-radius: 12px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+.meta {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+.chip {
+    background: #11161d;
+    border: 1px solid #364154;
+    border-radius: 10px;
+    padding: 7px 12px;
+    text-align: center;
+    font-weight: 700;
+    color: #f3f5fa;
+}
+.pbox {
+    border: 1px solid var(--stroke);
+    border-radius: 12px;
+    padding: 12px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    font-weight: 800;
+    transition: box-shadow 0.2s ease, transform 0.15s ease;
+    text-align: center;
+}
+.pbox-player-0 {
+    background: linear-gradient(180deg, rgba(220, 38, 38, .2), rgba(22, 31, 43, .85));
+}
+.pbox-player-1 {
+    background: linear-gradient(180deg, rgba(127, 29, 29, .35), rgba(22, 31, 43, .85));
+}
+.pbox.is-active {
+    box-shadow: 0 0 0 2px var(--accent) inset, 0 0 20px rgba(220, 38, 38, .35);
+    transform: translateY(-2px);
+}
+.turn {
+    margin-top: 8px;
+    border: 1px solid var(--stroke);
+    border-radius: 10px;
+    padding: 9px 12px;
+    font-weight: 900;
+    display: flex;
+    justify-content: space-between;
+    color: var(--text);
+}
+.turn-active-0 {
+    background: linear-gradient(90deg, rgba(220, 38, 38, .35), rgba(220, 38, 38, .1));
+    border-color: rgba(220, 38, 38, .55);
+}
+.turn-active-1 {
+    background: linear-gradient(90deg, rgba(127, 29, 29, .4), rgba(127, 29, 29, .12));
+    border-color: rgba(185, 28, 28, .45);
+}
+.status {
+    margin-top: 10px;
+    text-align: center;
+    color: #fecaca;
+    font-weight: 700;
+    min-height: 24px;
+}
+.board-wrap {
+    position: relative;
+    background: linear-gradient(180deg, #171c24, #12171f);
+    border: 1px solid var(--stroke);
+    border-radius: 12px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, .35);
+    padding: 10px;
+}
+.memorize-banner {
+    display: none;
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 5;
+    padding: 8px 16px;
+    border-radius: 999px;
+    border: 1px solid rgba(220, 38, 38, .55);
+    background: rgba(127, 29, 29, .45);
+    color: #fecaca;
+    font-size: 15px;
+    font-weight: 900;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, .25);
+    pointer-events: none;
+    text-align: center;
+    max-width: calc(100% - 16px);
+}
+.memorize-banner.show { display: block; }
+.board {
+    display: grid;
+    gap: 8px;
+    align-items: stretch;
+}
+.card {
+    aspect-ratio: 3 / 4;
+    border: 1px solid #3a4558;
+    border-radius: 8px;
+    background: #1a2029;
+    box-shadow: 0 8px 14px rgba(0,0,0,.26);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    min-height: 0;
+}
+.card-face {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform .25s ease, opacity .25s ease;
+}
+.card-back {
+    background:
+        radial-gradient(circle at 50% 45%, rgba(220, 38, 38, .4) 0 28%, transparent 30%),
+        linear-gradient(145deg, #1a0a0a, #0a0a0a);
+    color: #fca5a5;
+    font-size: clamp(18px, 5vw, 28px);
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+}
+.card-front {
+    background: #f5f7fb;
+    padding: 6px;
+    transform: scale(.95);
+    opacity: 0;
+}
+.card.is-open .card-back,
+.card.is-matched .card-back { opacity: 0; transform: scale(.95); }
+.card.is-open .card-front,
+.card.is-matched .card-front { opacity: 1; transform: scale(1); }
+.card img {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    object-position: center;
+}
+.fallback {
+    display: none;
+    max-width: 100%;
+    max-height: 100%;
+    padding: 8px;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(145deg, #dc2626, #7f1d1d);
+    color: #fff;
+    font-weight: 900;
+    font-size: clamp(12px, 2.5vw, 16px);
+    line-height: 1.3;
+    word-break: break-word;
+}
+/* blocks on sidebars mimic screenshot layout */
+.side-title {
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 900;
+    margin-bottom: 10px;
+    text-align: center;
+}
+.side-actions {
+    display: grid;
+    gap: 8px;
+    margin-top: 14px;
+}
+.ghost-btn {
+    border: 1px solid var(--stroke);
+    border-radius: 10px;
+    background: #121821;
+    color: #d5deed;
+    font-family: inherit;
+    font-weight: 800;
+    padding: 8px;
+}
+.ghost-btn:hover { border-color: var(--accent); color: #fecaca; }
+
+.result-modal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    z-index: 60;
+    background: rgba(0, 0, 0, 0.72);
+}
+.result-modal.show {
+    display: flex;
+}
+.result-box {
+    width: min(92vw, 440px);
+    background: linear-gradient(165deg, rgba(32, 6, 6, 0.95), rgba(10, 10, 10, 0.95));
+    border: 1px solid rgba(220, 38, 38, 0.58);
+    border-radius: 16px;
+    box-shadow: 0 22px 48px rgba(0, 0, 0, 0.5), 0 0 24px rgba(220, 38, 38, 0.28);
+    padding: 20px 18px 16px;
+    text-align: center;
+    color: #f8fafc;
+}
+.result-title {
+    font-size: 24px;
+    font-weight: 900;
+    color: #fca5a5;
+    margin-bottom: 8px;
+}
+.result-text {
+    font-size: 16px;
+    color: #e5e7eb;
+    line-height: 1.7;
+    margin-bottom: 16px;
+}
+.result-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+@media (max-width: 1100px) {
+    .layout { grid-template-columns: 1fr; }
+    .side { min-height: 0; }
+    .side.left { order: 2; }
+    .side.right { order: 3; }
+    .main { order: 1; }
+    .side .pbox { max-width: 360px; margin: 0 auto; }
+}
+@media (max-width: 700px) {
+    .meta { justify-content: stretch; }
+    .chip { flex: 1 1 100%; }
+    .card-front { padding: 6px; }
+}
+@media (max-width: 420px) {
+    .card { border-radius: 7px; }
+}
+</style>
+</head>
+<body class="game-site">
+<div class="wrap">
+    <div class="layout">
+        <aside class="side left">
+            <div class="side-title">اللاعب الأول</div>
+            <div class="pbox pbox-player-0" id="pbox0">
+                <span id="playerA">لاعب 1</span>
+                <span>النقاط: <b id="scoreA">0</b></span>
+            </div>
+            <div class="side-actions">
+                <button class="ghost-btn" type="button" onclick="location.href='set.html'">جولة جديدة</button>
+                <button class="ghost-btn" type="button" onclick="location.href='games.html'">القائمة</button>
+            </div>
+        </aside>
+
+        <main class="main">
+            <div class="top">
+                <div class="meta">
+                    <div class="chip">الأزواج: <span id="cardCountLabel">0</span></div>
+                    <div class="chip">وقت الحفظ: <span id="memorizeLabel">0</span> ث</div>
+                    <div class="chip">وقت الدور: <span id="turnTimeLabel">0</span> ث</div>
+                </div>
+                <div class="turn turn-active-0" id="turnBar">
+                    <span>دور: <span id="turnName">لاعب 1</span></span>
+                    <span>الوقت: <span id="turnClock">0</span></span>
+                </div>
+                <div class="status" id="statusLine"></div>
+            </div>
+
+            <div class="board-wrap">
+                <div class="memorize-banner" id="memorizeOverlay" aria-live="polite"></div>
+                <div class="board" id="board"></div>
+            </div>
+        </main>
+
+        <aside class="side right">
+            <div class="side-title">اللاعب الثاني</div>
+            <div class="pbox pbox-player-1" id="pbox1">
+                <span id="playerB">لاعب 2</span>
+                <span>النقاط: <b id="scoreB">0</b></span>
+            </div>
+            <div class="side-actions">
+                <button class="ghost-btn" type="button" id="sidebarReplayBtn">إعادة اللعب</button>
+                <button class="ghost-btn" type="button" onclick="location.href='INDEX.HTML'">خروج</button>
+            </div>
+        </aside>
+    </div>
+</div>
+<div class="result-modal" id="resultModal" aria-hidden="true">
+    <div class="result-box" role="dialog" aria-modal="true" aria-labelledby="resultTitle">
+        <div class="result-title" id="resultTitle">انتهت الجولة</div>
+        <div class="result-text" id="resultText"></div>
+        <div class="result-actions">
+            <button class="ghost-btn" id="resultReplayBtn" type="button">إعادة اللعب</button>
+            <button class="ghost-btn" id="resultExitBtn" type="button">القائمة</button>
+        </div>
+    </div>
+</div>
+<script src="js/match-images.js"></script>
+<script src="js/match.js" defer></script>
+<script src="js/ui-effects.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,158 @@
+/* Visual enhancement layer: non-destructive, shared across pages */
+:root {
+    --fx-glow: 0 0 0 1px rgba(255, 255, 255, 0.35), 0 12px 28px rgba(0, 0, 0, 0.12);
+}
+
+html, body {
+    min-height: 100%;
+}
+
+body {
+    position: relative;
+    isolation: isolate;
+}
+
+body::before,
+body::after {
+    content: "";
+    position: fixed;
+    width: 44vmax;
+    height: 44vmax;
+    border-radius: 999px;
+    pointer-events: none;
+    z-index: -1;
+    filter: blur(42px);
+    opacity: 0.26;
+    animation: fxFloat 14s ease-in-out infinite alternate;
+}
+
+body::before {
+    top: -20vmax;
+    right: -14vmax;
+    background: radial-gradient(circle at 35% 35%, #ffd666 0%, #ffb703 45%, rgba(255, 183, 3, 0) 70%);
+}
+
+body::after {
+    bottom: -22vmax;
+    left: -16vmax;
+    background: radial-gradient(circle at 40% 40%, #90e0ef 0%, #48cae4 45%, rgba(72, 202, 228, 0) 72%);
+    animation-direction: alternate-reverse;
+}
+
+.login-box,
+.set-box,
+.top,
+.board-wrap,
+.gcard {
+    backdrop-filter: saturate(1.05);
+    box-shadow: var(--fx-glow), 6px 6px 0 var(--black, #111);
+    transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
+}
+
+.login-box:hover,
+.set-box:hover,
+.top:hover,
+.board-wrap:hover,
+.gcard:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.01);
+}
+
+.btn-play,
+.btn-outline,
+button,
+a.btn-play,
+a.btn-outline,
+.memorize-opt label,
+.card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease, background-color 0.2s ease;
+}
+
+.btn-play:hover,
+.btn-outline:hover,
+button:hover,
+a.btn-play:hover,
+a.btn-outline:hover {
+    filter: saturate(1.08);
+}
+
+.btn-play:active,
+.btn-outline:active,
+button:active,
+a.btn-play:active,
+a.btn-outline:active {
+    transform: translateY(1px) scale(0.99);
+}
+
+.gcard,
+.card,
+.chip,
+.slider-value,
+.memorize-banner {
+    animation: fxFadeInUp 0.45s ease both;
+}
+
+.cards-grid .gcard:nth-child(2) { animation-delay: 0.08s; }
+.cards-grid .gcard:nth-child(3) { animation-delay: 0.16s; }
+
+.card {
+    will-change: transform;
+}
+
+.card:hover {
+    transform: translateY(-2px) rotate(-0.35deg);
+}
+
+.card.is-open,
+.card.is-matched {
+    animation: fxPulse 0.35s ease;
+}
+
+.turn {
+    position: relative;
+    overflow: hidden;
+}
+
+.turn::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, transparent 0%, rgba(255, 255, 255, 0.32) 45%, transparent 70%);
+    transform: translateX(-130%);
+    animation: fxSweep 2.8s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes fxFadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.985);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes fxPulse {
+    0% { transform: scale(0.98); }
+    60% { transform: scale(1.015); }
+    100% { transform: scale(1); }
+}
+
+@keyframes fxSweep {
+    0% { transform: translateX(-130%); }
+    100% { transform: translateX(130%); }
+}
+
+@keyframes fxFloat {
+    0% { transform: translate3d(0, 0, 0) scale(1); }
+    100% { transform: translate3d(-2vmax, 1.2vmax, 0) scale(1.06); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+    }
+}

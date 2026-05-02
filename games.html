@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>اختيار اللعبة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="game-ambient.css">
+<link rel="stylesheet" href="pro-theme.css">
+<style>
+/* مستوحى من تصميم DC QUIZ — https://detectivecoonanquiz.netlify.app/ */
+:root {
+    --cream: #f0e9d2;
+    --cream-2: #e8dfc5;
+    --black: #111111;
+    --orange: #f5a400;
+    --white: #ffffff;
+    --dot: rgba(0, 0, 0, 0.08);
+    --radius: 14px;
+    --radius-lg: 20px;
+    --shadow: 0 4px 0 rgba(0, 0, 0, 0.15);
+    --shadow-lg: 0 8px 0 rgba(0, 0, 0, 0.15);
+    --font: "Tajawal", sans-serif;
+    --trans: 0.2s ease;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: var(--font);
+    background: var(--cream);
+    background-image: radial-gradient(circle, var(--dot) 1.5px, transparent 1.5px);
+    background-size: 28px 28px;
+    color: var(--black);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+button, a.btn-play, a.btn-outline {
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    outline: none;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* أزرار */
+.btn-play {
+    background: var(--orange);
+    color: var(--black);
+    font-size: 17px;
+    font-weight: 900;
+    padding: 14px 32px;
+    border-radius: var(--radius);
+    border: 2.5px solid var(--black);
+    box-shadow: var(--shadow-lg);
+    transition: var(--trans);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-play:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 0 rgba(0, 0, 0, 0.15);
+}
+
+.btn-play:active {
+    transform: translateY(2px);
+    box-shadow: none;
+}
+
+.btn-play.sm {
+    font-size: 14px;
+    padding: 10px 22px;
+    box-shadow: var(--shadow);
+}
+
+.btn-outline {
+    background: var(--white);
+    color: var(--black);
+    font-size: 17px;
+    font-weight: 800;
+    padding: 14px 32px;
+    border-radius: var(--radius);
+    border: 2.5px solid var(--black);
+    box-shadow: var(--shadow-lg);
+    transition: var(--trans);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-outline:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 0 rgba(0, 0, 0, 0.15);
+    background: var(--cream);
+}
+
+.btn-outline:active {
+    transform: translateY(2px);
+    box-shadow: none;
+}
+
+.btn-outline.sm {
+    font-size: 14px;
+    padding: 10px 22px;
+    box-shadow: var(--shadow);
+}
+
+/* قسم الألعاب */
+.games-section {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 48px 32px 72px;
+}
+
+.section-label {
+    display: inline-block;
+    background: var(--orange);
+    color: var(--black);
+    font-size: 12px;
+    font-weight: 900;
+    padding: 4px 14px;
+    border-radius: 100px;
+    border: 2px solid var(--black);
+    letter-spacing: 0.5px;
+    margin-bottom: 14px;
+}
+
+.section-title {
+    font-size: clamp(28px, 4vw, 42px);
+    font-weight: 900;
+    color: var(--black);
+    margin-bottom: 36px;
+    letter-spacing: -0.5px;
+}
+
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+    max-width: 960px;
+    margin: 0 auto;
+}
+
+.gcard {
+    background: var(--white);
+    border: 2.5px solid var(--black);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    box-shadow: 6px 6px 0 var(--black);
+    position: relative;
+    transition: transform var(--trans), box-shadow var(--trans);
+    text-align: right;
+}
+
+.gcard:hover:not(.locked) {
+    transform: translate(-3px, -3px);
+    box-shadow: 9px 9px 0 var(--black);
+}
+
+.gcard.active {
+    background: var(--cream);
+}
+
+.gcard.locked {
+    opacity: 0.62;
+    cursor: default;
+}
+
+.gcard-tag {
+    display: inline-block;
+    background: var(--orange);
+    color: var(--black);
+    font-size: 11px;
+    font-weight: 900;
+    padding: 3px 10px;
+    border-radius: 100px;
+    border: 2px solid var(--black);
+    margin-bottom: 14px;
+}
+
+.gcard-lock {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    font-size: 20px;
+}
+
+.gcard-icon {
+    font-size: 40px;
+    margin-bottom: 12px;
+    display: block;
+    line-height: 1;
+}
+
+.gcard-icon.muted {
+    filter: grayscale(1);
+    opacity: 0.5;
+}
+
+.gcard-title {
+    font-size: 18px;
+    font-weight: 900;
+    margin-bottom: 8px;
+    color: var(--black);
+}
+
+.gcard-desc {
+    font-size: 13px;
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 16px;
+}
+
+.gcard-info {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    font-size: 12px;
+    font-weight: 700;
+    color: #444;
+    margin-bottom: 18px;
+}
+
+.gcard-btns {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.coming-soon {
+    display: inline-block;
+    background: var(--cream-2);
+    border: 2px solid var(--black);
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 800;
+    padding: 6px 16px;
+    color: #777;
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.gcard:nth-child(1) {
+    animation: fadeUp 0.5s 0.1s both;
+}
+
+.gcard:nth-child(2) {
+    animation: fadeUp 0.5s 0.2s both;
+}
+
+.gcard:nth-child(3) {
+    animation: fadeUp 0.5s 0.3s both;
+}
+
+@media (max-width: 900px) {
+    .cards-grid {
+        grid-template-columns: 1fr;
+        max-width: 420px;
+    }
+}
+</style>
+</head>
+<body class="game-site">
+
+<section class="games-section">
+    <div class="section-label">الألعاب المتاحة</div>
+    <h1 class="section-title">اختر لعبتك</h1>
+
+    <div class="cards-grid">
+        <div class="gcard locked">
+            <div class="gcard-lock" aria-hidden="true">🔒</div>
+            <span class="gcard-icon muted" aria-hidden="true">⚔️</span>
+            <h2 class="gcard-title">RIVAL</h2>
+            <p class="gcard-desc">وضع تحدي سريع ضد الخصم — قريباً على المنصة.</p>
+            <div class="coming-soon">قريباً</div>
+        </div>
+
+        <div class="gcard active">
+            <div class="gcard-tag">🔥 متاح الآن</div>
+            <span class="gcard-icon" aria-hidden="true">🎴</span>
+            <h2 class="gcard-title">MATCH</h2>
+            <p class="gcard-desc">طابق الأزواج واختبر تركيزك — لعبة بسيطة وممتعة.</p>
+            <div class="gcard-btns">
+                <button type="button" class="btn-play sm" onclick="openMatch()">العب الآن</button>
+            </div>
+        </div>
+
+        <div class="gcard locked">
+            <div class="gcard-lock" aria-hidden="true">🔒</div>
+            <span class="gcard-icon muted" aria-hidden="true">🃏</span>
+            <h2 class="gcard-title">CARD</h2>
+            <p class="gcard-desc">أوراق واستراتيجية — قيد التطوير.</p>
+            <div class="coming-soon">قريباً</div>
+        </div>
+    </div>
+</section>
+
+<script src="js/games.js" defer></script>
+<script src="js/ui-effects.js" defer></script>
+</body>
+</html>
